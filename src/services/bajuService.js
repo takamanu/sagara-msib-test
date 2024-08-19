@@ -30,6 +30,10 @@ class BajuService {
   async adjustStok(id, quantity) {
     return this.bajuRepository.adjustStok(id, quantity);
   }
+
+  async cekStok(operator, param = 0) {
+    return this.bajuRepository.cekStok(operator, param);
+  }
 }
 
 module.exports = BajuService;

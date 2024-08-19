@@ -62,6 +62,12 @@ class BajuRepository {
     const row = result.rows[0];
     return new Baju(row.id, row.warna, row.ukuran, row.harga, row.stok);
   }
+  
+  async cekStok(operator, param) {
+    const query = `SELECT * FROM baju WHERE stok ${operator} ${param}`;
+    const result = await this.pool.query(query);
+    return result.rows.map((row) => new Baju({ ...row }));
+  }
 }
 
 module.exports = BajuRepository;

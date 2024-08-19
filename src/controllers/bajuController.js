@@ -85,6 +85,33 @@ class BajuController {
       response(500, error.message, 'Gagal adjust stok baju', res);
     }
   }
+
+  async stokTersedia(req, res) {
+    try {
+      const baju = await this.bajuService.cekStok('!=');
+      response(200, baju, 'Data baju yang stok nya tersedia', res);
+    } catch (error) {
+      response(500, error.message, 'Gagal menampilkan stok baju yang tersedia', res);
+    }
+  }
+
+  async stokHabis(req, res) {
+    try {
+      const baju = await this.bajuService.cekStok('=');
+      response(200, baju, 'Data baju yang stok nya habis', res);
+    } catch (error) {
+      response(500, error.message, 'Gagal menampilkan stok baju yang habis', res);
+    }
+  }
+
+  async stokTipis(req, res) {
+    try {
+      const baju = await this.bajuService.cekStok('<', 5);
+      response(200, baju, 'Data baju yang stok nya kurang dari 5', res);
+    } catch (error) {
+      response(500, error.message, 'Gagal menampilkan stok baju yang kurang dari 5', res);
+    }
+  }
 }
 
 module.exports = BajuController;
