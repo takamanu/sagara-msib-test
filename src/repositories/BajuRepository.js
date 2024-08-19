@@ -41,6 +41,23 @@ class BajuRepository {
     const result = await this.pool.query(query, [id]);
     return result.rowCount > 0;
   }
+  
+  async findByWarnaDanUkuran(warna, ukuran) {
+    const query = "SELECT * FROM baju WHERE warna = $1 AND ukuran = $2";
+    const result = await this.pool.query(query, [warna, ukuran]);
+    return result.rows.map(
+      (row) => new Baju(row.id, row.warna, row.ukuran, row.harga, row.stok)
+    );
+  }
+
+  async adjustStok(id, quantity) {
+    const parsedQuantity = parseInt(quantity, 10);
+    const query = "UPDATE baju SET stok = stok + $1 WHERE id = $2 RETURNING *";
+    const result = await this.pool.query(query, [parsedQuantity, id]);
+    if (result.rows.length === 0) return null;
+    const row = result.rows[0];
+    return new Baju(row.id, row.warna, row.ukuran, row.harga, row.stok);
+  }
 }
 
 module.exports = BajuRepository;
