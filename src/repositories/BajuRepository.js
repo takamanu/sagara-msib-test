@@ -1,6 +1,10 @@
 const Baju = require("../models/Baju");
 
 class BajuRepository {
+  constructor(pool) {
+    this.pool = pool;
+  }
+  
   async findAll() {
     const query = "SELECT * FROM baju";
     const result = await this.pool.query(query);

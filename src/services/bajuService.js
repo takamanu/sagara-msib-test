@@ -1,4 +1,8 @@
 class BajuService {
+  constructor(bajuRepository) {
+    this.bajuRepository = bajuRepository;
+  }
+
   async getAllBaju() {
     return this.bajuRepository.findAll();
   }
@@ -17,6 +21,14 @@ class BajuService {
 
   async deleteBaju(id) {
     return this.bajuRepository.delete(id);
+  }
+
+  async searchBajuByWarnaUkuran(warna, ukuran) {
+    return this.bajuRepository.findByWarnaDanUkuran(warna, ukuran);
+  }
+
+  async adjustStok(id, quantity) {
+    return this.bajuRepository.adjustStok(id, quantity);
   }
 }
 
