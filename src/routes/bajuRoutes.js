@@ -8,6 +8,8 @@ function bajuRoutes(bajuController) {
   router.get('/baju/:id', bajuController.getBajuById.bind(bajuController));
   router.put('/baju/:id', bajuController.updateBaju.bind(bajuController));
   router.delete('/baju/:id', bajuController.deleteBaju.bind(bajuController));
+  router.get('/search', bajuController.searchBajuByWarnaUkuran.bind(bajuController));
+  router.put('/baju/adjust-stok/:id', bajuController.adjustStok.bind(bajuController));
   
   return router;
 }

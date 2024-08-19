@@ -1,6 +1,10 @@
 const response = require('../utils/response');
 
 class BajuController {
+  constructor(bajuService) {
+    this.bajuService = bajuService;
+  }
+
   async getAllBaju(req, res) {
     try {
       const baju = await this.bajuService.getAllBaju();
@@ -55,6 +59,30 @@ class BajuController {
       response(204, '', '', res);
     } catch (error) {
       response(500, error.message, 'Gagal menghapus data baju', res);
+    }
+  }
+
+  async searchBajuByWarnaUkuran(req, res) {
+    try {
+      const { warna, ukuran } = req.body;
+      const baju = await this.bajuService.searchBajuByWarnaUkuran(warna, ukuran);
+      response(200, baju, 'Data baju berdasarkan warna dan ukuran', res);
+    } catch (error) {
+      response(500, error.message, 'Gagal mendapatkan data baju berdasarkan warna dan ukuran', res);
+    }
+  }
+
+  async adjustStok(req, res) {
+    try {
+      const { id } = req.params;
+      const { quantity } = req.body;
+      const baju = await this.bajuService.adjustStok(id, quantity);
+      if (!baju) {
+        return response(404, { error: 'Baju tidak ditemukan' }, 'Gagal adjust stok baju', res);
+      }
+      response(200, baju, 'Berhasil adjust stok baju', res);
+    } catch (error) {
+      response(500, error.message, 'Gagal adjust stok baju', res);
     }
   }
 }
