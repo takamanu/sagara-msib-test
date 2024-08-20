@@ -10,15 +10,16 @@ import (
 	"sagara-msib-test/internal/entities"
 	"sagara-msib-test/internal/services"
 	jaegerLog "sagara-msib-test/pkg/log"
+	"strconv"
 )
 
 type BajuHandler struct {
-	bajuServices services.InventoryBajuServices
+	bajuServices services.BajuServices
 	tracer       opentracing.Tracer
 	logger       jaegerLog.Factory
 }
 
-func NewBajuHandler(bajuServices services.InventoryBajuServices, tracer opentracing.Tracer, logger jaegerLog.Factory) (handler *BajuHandler) {
+func NewBajuHandler(bajuServices services.BajuServices, tracer opentracing.Tracer, logger jaegerLog.Factory) (handler *BajuHandler) {
 	handler = &BajuHandler{
 		bajuServices: bajuServices,
 		tracer:       tracer,
@@ -30,10 +31,10 @@ func NewBajuHandler(bajuServices services.InventoryBajuServices, tracer opentrac
 
 func (bh *BajuHandler) HandleClient(w http.ResponseWriter, r *http.Request) {
 	var (
-		baju      entities.Baju
-		ctx       context.Context
-		err       error
-		errorCode int
+		serviceResult interface{}
+		ctx           context.Context
+		err           error
+		statusCode    int
 	)
 
 	spanCtx, _ := bh.tracer.Extract(opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(r.Header))
@@ -47,27 +48,51 @@ func (bh *BajuHandler) HandleClient(w http.ResponseWriter, r *http.Request) {
 		urlQueryLength := len(r.URL.Query())
 
 		switch r.Method {
+		case http.MethodGet:
+			switch urlQueryLength {
+			case 1:
+				_, bajuIdOK := r.URL.Query()["bajuId"]
+				if bajuIdOK {
+					bajuId, err := strconv.Atoi(r.FormValue("bajuId"))
+					if err != nil {
+						statusCode = http.StatusBadRequest
+						break
+					}
+
+					bh.logger.For(ctx).Info("Running service", zap.String("service", "Get Baju By Id"))
+					serviceResult, err = bh.bajuServices.GetBajuByID(bajuId)
+					if err != nil {
+						statusCode = http.StatusNotFound
+						break
+					}
+				}
+			default:
+				bh.logger.For(ctx).Info("Running service", zap.String("service", "Get All Baju Data"))
+			}
 		case http.MethodPost:
 			switch urlQueryLength {
 			default:
-				err = json.NewDecoder(r.Body).Decode(&baju)
+				var (
+					bajuRequest entities.Baju
+				)
+				err = json.NewDecoder(r.Body).Decode(&bajuRequest)
 				if err != nil {
-					errorCode = http.StatusBadRequest
+					statusCode = http.StatusBadRequest
 				}
 
 				bh.logger.For(ctx).Info("Running service", zap.String("service", "Create New Baju"))
-				err = bh.bajuServices.CreateBaju(&baju)
+				err = bh.bajuServices.CreateBaju(bajuRequest)
 				if err != nil {
-					errorCode = http.StatusInternalServerError
+					statusCode = http.StatusInternalServerError
 				}
 			}
 		}
 	}
 
 	if err != nil {
-		http.Error(w, err.Error(), errorCode)
+		http.Error(w, err.Error(), statusCode)
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(baju)
+	json.NewEncoder(w).Encode(serviceResult)
 }
