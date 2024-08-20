@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"log"
 	"sagara-msib-test/internal/entities"
 )
 
@@ -21,5 +22,7 @@ func NewInventoryBajuRepository(db *sql.DB) (ibr InventoryBajuRepository) {
 }
 
 func (ibr *inventoryBajuRepository) Save(baju *entities.Baju) (err error) {
+	log.Printf("[LOG][Repository] Nama Baju Request : %v\n", baju.Nama)
+
 	return err
 }

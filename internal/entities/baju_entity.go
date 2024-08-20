@@ -1,9 +1,11 @@
 package entities
 
 type Baju struct {
-	ID     int
-	Stok   int
-	Harga  float64
-	Warna  string
-	Ukuran string
+	ID     int     `json:"id"`
+	Nama   string  `json:"nama"`
+	Brand  string  `json:"brand"`
+	Ukuran string  `json:"ukuran"`
+	Stok   int     `json:"stok"`
+	Harga  float64 `json:"harga"`
+	Warna  string  `json:"warna"`
 }
