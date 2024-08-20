@@ -2,28 +2,26 @@
 
 Backend Project-based Test
 
-Deskripsi
-Anda diminta untuk mengembangkan backend untuk sistem manajemen inventaris sebuah toko baju. Sistem ini harus dapat menangani pembaruan stok baju, penambahan baju baru, dan pencarian baju berdasarkan warna dan ukuran.
+# Clothes Inventory API
+Clothes Inventory API adalah sistem backend yang dibangun dengan menggunakan mode Clean Architecture untuk memastikan 
+kode yang terstruktur dengan baik, modular, dan mudah untuk dikembangkan lebih lanjut. API ini dirancang untuk menangani 
+berbagai operasi terkait manajemen inventaris baju, seperti pencarian, penambahan, pengurangan stok, dan manajemen data 
+lainnya.
 
-Spesifikasi (WAJIB)
-- Sistem harus dapat menangani operasi CRUD untuk baju.
-- Setiap baju memiliki atribut warna, ukuran, harga, dan stok.
-- Sistem harus dapat mencari baju berdasarkan warna dan ukuran.
-- Sistem harus dapat menambahkan stok baju.
-- Sistem harus dapat mengurangi stok baju.
-- Sistem harus dapat menampilkan semua baju yang tersedia.
+## Fitur Utama
+* **CRUD untuk item baju,** Menyimpan, menampilkan, memperbarui, dan menghapus data baju dalam inventaris.
+* **Pencarian Baju,** Mencari baju berdasarkan warna dan ukuran.
+* **Manajemen Stok,** Menambahkan dan mengurangi stok baju, menampilkan baju yang stoknya habis, serta baju dengan stok kurang dari 5.
 
-Spesifikasi (Optional, mendapat nilai tambahan jika dikerjakan)
-- Sistem dapat menampilkan semua baju yang stoknya habis.
-- Sistem dapat menampilkan semua baju yang stoknya kurang dari 5.
 
-Tech Stack
-Dibebaskan untuk menggunakan tech stack apapun yang menurut Anda cocok untuk menyelesaikan tugas ini. Recommended stack: Node.js, Express.js, MongoDB or Go, Gin/Echo, Gorm, PostgreSQL.
+## Clean Architecture
+API ini dibangun dengan mengikuti prinsip **Clean Architecture** yang memisahkan kode menjadi beberapa lapisan untuk menjaga
+fleksibilitas dan kemudahan dalam pemeliharaan kode. Dengan struktur ini, logika bisnis, detail implementasi, dan antarmuka 
+pengguna dapat berkembang secara independen satu sama lain.
 
-Key points
-- Penerapan SOLID Principles menjadi nilai plus.
-- Penerapan unit testing menjadi nilai plus.
-- Penerapan Depedency Injection menjadi nilai plus.
+## Tracing & Logging
+Untuk memudahkan pemantauan dan debugging, API ini dilengkapi dengan **tracing** dan **logging** yang diimplementasikan menggunakan OpenTracing dan Jaeger-Client. Setiap permintaan yang masuk dan operasi yang dilakukan oleh API akan dilacak secara menyeluruh untuk memastikan transparansi dan deteksi kesalahan yang cepat.
 
-Deliverables
-Silakan fork repository ini dan submit link repository hasil pengerjaan Anda ke https://bit.ly/study-case-backend-developer-msib
+## Main Libraries
+* **OpenTracing,** Digunakan untuk implementasi tracing yang membantu dalam memantau kinerja dan perilaku API.
+* **Jaeger-Client,** Library untuk mengirim dan mengelola data tracing yang dihasilkan oleh API ke sistem observability seperti Jaeger.
