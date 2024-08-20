@@ -9,9 +9,9 @@ berbagai operasi terkait manajemen inventaris baju, seperti pencarian, penambaha
 lainnya.
 
 ## Fitur Utama
-* **CRUD untuk item baju,** Menyimpan, menampilkan, memperbarui, dan menghapus data baju dalam inventaris.
-* **Pencarian Baju,** Mencari baju berdasarkan warna dan ukuran.
-* **Manajemen Stok,** Menambahkan dan mengurangi stok baju, menampilkan baju yang stoknya habis, serta baju dengan stok kurang dari 5.
+* **CRUD untuk item baju,** menyimpan, menampilkan, memperbarui, dan menghapus data baju dalam inventaris.
+* **Pencarian Baju,** mencari baju berdasarkan nama, brand, warna, dan ukuran.
+* **Manajemen Stok,** menambahkan dan mengurangi stok baju, menampilkan baju yang stoknya habis, serta baju dengan stok kurang dari 5.
 
 
 ## Clean Architecture
@@ -20,8 +20,10 @@ fleksibilitas dan kemudahan dalam pemeliharaan kode. Dengan struktur ini, logika
 pengguna dapat berkembang secara independen satu sama lain.
 
 ## Tracing & Logging
-Untuk memudahkan pemantauan dan debugging, API ini dilengkapi dengan **tracing** dan **logging** yang diimplementasikan menggunakan OpenTracing dan Jaeger-Client. Setiap permintaan yang masuk dan operasi yang dilakukan oleh API akan dilacak secara menyeluruh untuk memastikan transparansi dan deteksi kesalahan yang cepat.
+Untuk memudahkan pemantauan dan debugging, API ini dilengkapi dengan **tracing** dan **logging** yang diimplementasikan 
+menggunakan OpenTracing dan Jaeger-Client. Setiap permintaan yang masuk dan operasi yang dilakukan oleh API akan dilacak 
+secara menyeluruh untuk memastikan transparansi dan deteksi kesalahan yang cepat.
 
 ## Main Libraries
-* **OpenTracing,** Digunakan untuk implementasi tracing yang membantu dalam memantau kinerja dan perilaku API.
-* **Jaeger-Client,** Library untuk mengirim dan mengelola data tracing yang dihasilkan oleh API ke sistem observability seperti Jaeger.
+* **OpenTracing,** digunakan untuk implementasi tracing yang membantu dalam memantau kinerja dan perilaku API.
+* **Jaeger-Client,** library untuk mengirim dan mengelola data tracing yang dihasilkan oleh API ke sistem observability seperti Jaeger.
