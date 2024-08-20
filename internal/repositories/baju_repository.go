@@ -1,70 +1,68 @@
 package repositories
 
 import (
-	"database/sql"
+	"context"
+	"gorm.io/gorm"
 	"sagara-msib-test/internal/entities"
 )
 
 type BajuRepository interface {
-	Create(baju entities.Baju) error
-	GetByID(id int) (entities.Baju, error)
-	GetAll() ([]entities.Baju, error)
-	Update(id int, baju entities.Baju) error
-	Delete(id int) error
+	Create(ctx context.Context, baju entities.Baju) error
+	GetByID(ctx context.Context, id int) (entities.Baju, error)
+	GetAll(ctx context.Context) ([]entities.Baju, error)
+	Update(ctx context.Context, id int, baju entities.Baju) error
+	Delete(ctx context.Context, id int) error
 }
 
 type bajuRepository struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
-func NewInventoryBajuRepository(db *sql.DB) (ibr BajuRepository) {
+func NewInventoryBajuRepository(db *gorm.DB) (ibr BajuRepository) {
 	ibr = &bajuRepository{
 		db: db,
 	}
 	return ibr
 }
 
-func (ibr *bajuRepository) Create(baju entities.Baju) error {
-	_, err := ibr.db.Exec(`INSERT INTO baju (warna, ukuran, harga, stok, nama, brand) VALUES ($1, $2, $3, $4, $5, $6)`,
-		baju.Warna, baju.Ukuran, baju.Harga, baju.Stok, baju.Nama, baju.Brand)
+func (br *bajuRepository) Create(ctx context.Context, baju entities.Baju) (err error) {
+	err = br.db.WithContext(ctx).Create(baju).Error
 	return err
 }
 
-func (ibr *bajuRepository) GetByID(id int) (entities.Baju, error) {
-	row := ibr.db.QueryRow(`SELECT id, warna, ukuran, harga, stok, nama, brand FROM baju WHERE id = $1`, id)
-	var baju entities.Baju
-	err := row.Scan(&baju.ID, &baju.Warna, &baju.Ukuran, &baju.Harga, &baju.Stok, &baju.Nama, &baju.Brand)
-	if err != nil {
-		return entities.Baju{}, err
-	}
-	return baju, nil
+func (br *bajuRepository) GetByID(ctx context.Context, id int) (baju entities.Baju, err error) {
+	err = br.db.WithContext(ctx).First(&baju, id).Error
+	return baju, err
 }
 
-func (ibr *bajuRepository) GetAll() ([]entities.Baju, error) {
-	rows, err := ibr.db.Query(`SELECT id, warna, ukuran, harga, stok, nama, brand FROM baju`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var bajuList []entities.Baju
-	for rows.Next() {
-		var baju entities.Baju
-		if err := rows.Scan(&baju.ID, &baju.Warna, &baju.Ukuran, &baju.Harga, &baju.Stok, &baju.Nama, &baju.Brand); err != nil {
-			return nil, err
-		}
-		bajuList = append(bajuList, baju)
-	}
-	return bajuList, nil
+func (br *bajuRepository) GetAll(ctx context.Context) (bajuList []entities.Baju, err error) {
+	err = br.db.WithContext(ctx).Find(&bajuList).Error
+	return bajuList, err
 }
 
-func (r *bajuRepository) Update(id int, baju entities.Baju) error {
-	_, err := r.db.Exec(`UPDATE baju SET warna = $1, ukuran = $2, harga = $3, stok = $4, nama = $5, brand = $6 WHERE id = $7`,
-		baju.Warna, baju.Ukuran, baju.Harga, baju.Stok, baju.Nama, baju.Brand, id)
+func (br *bajuRepository) Update(ctx context.Context, id int, updatedBaju entities.Baju) (err error) {
+	var (
+		baju entities.Baju
+	)
+
+	if err = br.db.WithContext(ctx).First(&baju, id).Error; err != nil {
+		return err
+	}
+
+	baju.Nama = updatedBaju.Nama
+	baju.Brand = updatedBaju.Brand
+	baju.Warna = updatedBaju.Warna
+	baju.Ukuran = updatedBaju.Ukuran
+	baju.Harga = updatedBaju.Harga
+	baju.Stok = updatedBaju.Stok
+
+	err = br.db.WithContext(ctx).Save(&baju).Error
+
 	return err
 }
 
-func (r *bajuRepository) Delete(id int) error {
-	_, err := r.db.Exec(`DELETE FROM baju WHERE id = $1`, id)
+func (br *bajuRepository) Delete(ctx context.Context, id int) (err error) {
+	err = br.db.WithContext(ctx).Delete(&entities.Baju{}, id).Error
+
 	return err
 }

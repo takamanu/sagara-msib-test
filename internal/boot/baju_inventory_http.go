@@ -1,6 +1,7 @@
 package boot
 
 import (
+	"context"
 	"errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -16,9 +17,11 @@ import (
 func BajuInventoryHTTP() (err error) {
 	var (
 		logger *zap.Logger
+		ctx    context.Context
 	)
 
-	db, err := infrastructures.NewDatabase()
+	ctx = context.Background()
+	db, err := infrastructures.NewDatabase(ctx)
 	if err != nil {
 		return err
 	}

@@ -60,7 +60,7 @@ func (bh *BajuHandler) HandleClient(w http.ResponseWriter, r *http.Request) {
 					}
 
 					bh.logger.For(ctx).Info("Running service", zap.String("service", "Get Baju By Id"))
-					serviceResult, err = bh.bajuServices.GetBajuByID(bajuId)
+					serviceResult, err = bh.bajuServices.GetBajuByID(ctx, bajuId)
 					if err != nil {
 						statusCode = http.StatusNotFound
 						break
@@ -81,7 +81,7 @@ func (bh *BajuHandler) HandleClient(w http.ResponseWriter, r *http.Request) {
 				}
 
 				bh.logger.For(ctx).Info("Running service", zap.String("service", "Create New Baju"))
-				err = bh.bajuServices.CreateBaju(bajuRequest)
+				err = bh.bajuServices.CreateBaju(context.Background(), bajuRequest)
 				if err != nil {
 					statusCode = http.StatusInternalServerError
 				}

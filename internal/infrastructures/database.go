@@ -1,56 +1,52 @@
 package infrastructures
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"os"
+	"sagara-msib-test/internal/entities"
 )
 
-func NewDatabase() (db *sql.DB, err error) {
+func NewDatabase(ctx context.Context) (db *gorm.DB, err error) {
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_NAME")
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 
-	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable host=%s port=%s",
-		dbUser, dbPassword, dbName, dbHost, dbPort)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		dbHost, dbUser, dbPassword, dbName, dbPort)
 
-	db, err = sql.Open("postgres", connStr)
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	if err := db.Ping(); err != nil {
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get database: %w", err)
+	}
+
+	if err := sqlDB.PingContext(ctx); err != nil {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	if err := ensureTableExists(db); err != nil {
+	if err := ensureTableExists(ctx, db); err != nil {
 		return nil, err
 	}
 
-	fmt.Println("Successfully connected to PostgreSQL!")
+	fmt.Println("Successfully connected to PostgreSQL using GORM!")
 	return db, nil
 }
 
-func ensureTableExists(db *sql.DB) error {
-	query := `
-    CREATE TABLE IF NOT EXISTS baju (
-        id SERIAL PRIMARY KEY,
-		nama VARCHAR(100),
-        brand VARCHAR(100),
-        warna VARCHAR(50),
-        ukuran VARCHAR(10),
-        harga NUMERIC(10, 2),
-        stok INT
-    );`
-
-	_, err := db.Exec(query)
+func ensureTableExists(ctx context.Context, db *gorm.DB) error {
+	// Pastikan tabel `baju` ada
+	err := db.WithContext(ctx).AutoMigrate(&entities.Baju{})
 	if err != nil {
-		return fmt.Errorf("failed to ensure table exists: %w", err)
+		return fmt.Errorf("failed to migrate table: %w", err)
 	}
-
-	fmt.Println("Table 'baju' checked and created if not exists.")
 	return nil
 }
